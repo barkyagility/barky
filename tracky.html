@@ -47,7 +47,7 @@
             const newsletterId = urlParams.get('newsletter_id') || null; // Get newsletter_id if provided
 
             // Redirect back to the CRM server for tracking
-            const crmUrl = '/track_redirect.php?link=' + encodeURIComponent(linkId) + 
+            const crmUrl = 'https://www.barkr.eu/crm/track_redirect.php?link=' + encodeURIComponent(linkId) + 
                           '&token=' + encodeURIComponent(token) + 
                           '&contact_id=' + encodeURIComponent(contactId) +
                           (newsletterId ? '&newsletter_id=' + encodeURIComponent(newsletterId) : '') +
