@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect Handler</title>
+    <script>
+        // Function to handle redirects
+        window.onload = function() {
+            // Simple bot detection - most bots won't execute this JavaScript
+            let isHuman = false;
+
+            try {
+                // Create a canvas element and draw something - bots typically can't do this
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'green';
+                ctx.fillRect(10, 10, 100, 100);
+
+                // Check for mouse movement - bots typically don't move the mouse
+                let mouseMovements = 0;
+                document.addEventListener('mousemove', function() {
+                    mouseMovements++;
+                });
+
+                // Set a timeout to check if we've detected human behavior
+                setTimeout(function() {
+                    // If canvas operations worked or mouse moved, likely a human
+                    isHuman = (ctx !== null && canvas.toDataURL().length > 0) || mouseMovements > 0;
+                    performRedirect(isHuman);
+                }, 500); // Short delay to check for mouse movement
+            } catch (e) {
+                // If there's an error, proceed with the redirect but mark as not human
+                performRedirect(false);
+            }
+
+            // Don't redirect immediately - wait for human check
+            return;
+        };
+
+        function performRedirect(isHuman) {
+            // Get the URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const linkId = urlParams.get('link');
+            const token = urlParams.get('token');
+            const contactId = urlParams.get('contact_id') || '0'; // Default to 0 if not provided
+            const newsletterId = urlParams.get('newsletter_id') || null; // Get newsletter_id if provided
+
+            // Redirect back to the CRM server for tracking
+            const crmUrl = '/track_redirect.php?link=' + encodeURIComponent(linkId) + 
+                          '&token=' + encodeURIComponent(token) + 
+                          '&contact_id=' + encodeURIComponent(contactId) +
+                          (newsletterId ? '&newsletter_id=' + encodeURIComponent(newsletterId) : '') +
+                          '&is_human=' + (isHuman ? '1' : '0');
+
+            // Redirect to the CRM tracking URL
+            window.location.href = crmUrl;
+        };
+    </script>
+</head>
+<body>
+    <p>Redirecting to tracking server...</p>
+</body>
+</html>
